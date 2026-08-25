@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NÓRTIC Estúdio — Fotografia autoral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { paper:'#EFEDE7', graphite:'#101014', acid:'#D6FF3F', line:'#26262c' },
+    fontFamily: { display:['Archivo Black','sans-serif'], body:['Space Grotesk','sans-serif'] }
+  }}}
+</script>
+<style>
+  html{scroll-behavior:smooth}
+  body{background:#EFEDE7}
+  ::selection{background:#D6FF3F;color:#101014}
+  .fade-up{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+  .fade-up.in{opacity:1;transform:translateY(0)}
+  .zoom-hover{overflow:hidden}
+  .zoom-hover img{transition:transform .8s cubic-bezier(.16,1,.3,1)}
+  .zoom-hover:hover img{transform:scale(1.08)}
+  .marquee{display:flex;white-space:nowrap;animation:scroll 22s linear infinite}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .cursor-dot{position:fixed;width:14px;height:14px;background:#D6FF3F;border-radius:50%;pointer-events:none;z-index:200;mix-blend-mode:difference;transition:transform .15s ease;transform:translate(-50%,-50%)}
+  .filter-btn.active{background:#101014;color:#EFEDE7}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.035;z-index:100;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .modal-enter{animation:modalIn .35s cubic-bezier(.16,1,.3,1)}
+  @keyframes modalIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+  .skeleton{background:linear-gradient(90deg,#e2ded4 25%,#efece3 37%,#e2ded4 63%);background-size:400% 100%;animation:shimmer 1.4s infinite}
+  @keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+</style>
+</head>
+<body class="text-graphite font-body antialiased">
+<div class="grain"></div>
+<div class="cursor-dot hidden md:block" id="cursorDot"></div>
+
+<header class="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-12 flex items-center justify-between h-24 text-paper">
+    <a href="#" class="font-display text-xl tracking-tight">NÓRTIC</a>
+    <nav class="hidden md:flex gap-8 text-sm uppercase tracking-widest">
+      <a href="#trabalhos">Trabalhos</a><a href="#sobre">Sobre</a><a href="#contato">Contato</a>
+    </nav>
+    <button id="menuBtn" class="md:hidden text-2xl">☰</button>
+  </div>
+</header>
+<div id="mobileMenu" class="hidden fixed inset-0 z-40 bg-graphite text-paper flex flex-col items-center justify-center gap-8 text-3xl font-display">
+  <a href="#trabalhos">Trabalhos</a><a href="#sobre">Sobre</a><a href="#contato">Contato</a>
+  <button id="closeMenu" class="absolute top-8 right-8 text-2xl">✕</button>
+</div>
+
+<!-- HERO -->
+<section class="min-h-screen relative flex flex-col justify-center overflow-hidden bg-graphite text-paper">
+  <div id="parallaxBg" class="absolute inset-0 opacity-40" style="background-image:url('https://images.unsplash.com/photo-1554080353-a576cf803bda?q=80&w=1800&auto=format&fit=crop');background-size:cover;background-position:center;"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-graphite via-graphite/40 to-graphite/70"></div>
+  <div class="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 pt-24">
+    <h1 class="font-display text-[13vw] md:text-[9vw] leading-[0.85] tracking-tighter">FOTOGRAFIA<br><span class="text-acid">SEM FILTRO.</span></h1>
+    <p class="max-w-md mt-8 text-paper/60 fade-up">Ensaios editoriais, retratos e campanhas — capturados com direção de arte autoral desde 2018.</p>
+  </div>
+  <div class="absolute bottom-8 left-0 right-0 overflow-hidden">
+    <div class="marquee font-display text-6xl md:text-8xl text-paper/10">
+      <span class="px-6">RETRATO •&nbsp;</span><span class="px-6">EDITORIAL •&nbsp;</span><span class="px-6">CAMPANHA •&nbsp;</span><span class="px-6">ESTÚDIO •&nbsp;</span>
+      <span class="px-6">RETRATO •&nbsp;</span><span class="px-6">EDITORIAL •&nbsp;</span><span class="px-6">CAMPANHA •&nbsp;</span><span class="px-6">ESTÚDIO •&nbsp;</span>
+    </div>
+  </div>
+</section>
+
+<!-- TRABALHOS com filtros -->
+<section id="trabalhos" class="py-28 px-6 md:px-12 max-w-[1600px] mx-auto">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+    <h2 class="font-display text-5xl md:text-6xl fade-up">TRABALHOS<br>SELECIONADOS</h2>
+    <div class="flex flex-wrap gap-2" id="filters">
+      <button data-f="all" class="filter-btn active border border-graphite px-4 py-2 text-xs uppercase tracking-widest rounded-full transition">Todos</button>
+      <button data-f="retrato" class="filter-btn border border-graphite px-4 py-2 text-xs uppercase tracking-widest rounded-full transition">Retrato</button>
+      <button data-f="editorial" class="filter-btn border border-graphite px-4 py-2 text-xs uppercase tracking-widest rounded-full transition">Editorial</button>
+      <button data-f="campanha" class="filter-btn border border-graphite px-4 py-2 text-xs uppercase tracking-widest rounded-full transition">Campanha</button>
+    </div>
+  </div>
+
+  <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"></div>
+  <p id="emptyState" class="hidden text-center py-20 text-graphite/40 font-display text-2xl">NENHUM TRABALHO NESSA CATEGORIA — AINDA.</p>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre" class="py-28 bg-graphite text-paper">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-16 items-center">
+    <div class="zoom-hover rounded-sm fade-up">
+      <img src="https://images.unsplash.com/photo-1508186225823-0963cf9ab0de?q=80&w=1200&auto=format&fit=crop" class="w-full aspect-[4/5] object-cover">
+    </div>
+    <div class="fade-up">
+      <p class="text-acid uppercase tracking-widest text-xs mb-4">Direção de fotografia</p>
+      <h2 class="font-display text-4xl md:text-5xl mb-6 leading-tight">A CÂMERA É SÓ<br>A DESCULPA.</h2>
+      <p class="text-paper/60 leading-relaxed mb-8">Trabalho com marcas e pessoas que querem imagens que carreguem tensão, textura e ponto de vista — não só um clique bonito. Cada projeto começa com uma conversa sobre o que a imagem precisa dizer.</p>
+      <div class="grid grid-cols-3 gap-6 border-t border-paper/10 pt-8">
+        <div><p class="font-display text-3xl text-acid">120+</p><p class="text-xs text-paper/40 uppercase mt-1">Projetos</p></div>
+        <div><p class="font-display text-3xl text-acid">8</p><p class="text-xs text-paper/40 uppercase mt-1">Anos</p></div>
+        <div><p class="font-display text-3xl text-acid">30</p><p class="text-xs text-paper/40 uppercase mt-1">Marcas</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO / FORM -->
+<section id="contato" class="py-28 px-6 md:px-12 max-w-[1600px] mx-auto">
+  <h2 class="font-display text-5xl md:text-6xl mb-14 fade-up">VAMOS<br>CRIAR ALGO?</h2>
+  <div class="grid md:grid-cols-2 gap-16">
+    <div class="fade-up">
+      <p class="text-graphite/60 mb-8 max-w-md">Conte um pouco sobre o projeto e retorno em até 24h com disponibilidade e orçamento.</p>
+      <div class="space-y-4 text-sm">
+        <a href="https://wa.me/5511963102534" target="_blank" class="flex items-center gap-3 hover:text-acid transition"><span class="font-display">WPP</span> 11 96310-2534</a>
+        <a href="https://yatsardigital.github.io/yatsar/" target="_blank" class="flex items-center gap-3 hover:text-acid transition"><span class="font-display">WEB</span> Portfólio completo</a>
+      </div>
+    </div>
+    <form id="contactForm" class="fade-up space-y-4">
+      <input required id="fname" placeholder="Seu nome" class="w-full bg-transparent border-b border-graphite/30 py-3 focus:outline-none focus:border-graphite placeholder:text-graphite/40">
+      <input required id="femail" type="email" placeholder="E-mail" class="w-full bg-transparent border-b border-graphite/30 py-3 focus:outline-none focus:border-graphite placeholder:text-graphite/40">
+      <select id="ftype" class="w-full bg-transparent border-b border-graphite/30 py-3 focus:outline-none">
+        <option>Ensaio retrato</option><option>Editorial</option><option>Campanha</option>
+      </select>
+      <textarea id="fmsg" placeholder="Sobre o projeto..." rows="3" class="w-full bg-transparent border-b border-graphite/30 py-3 focus:outline-none placeholder:text-graphite/40"></textarea>
+      <button type="submit" id="submitBtn" class="w-full bg-graphite text-paper py-4 font-display text-sm uppercase tracking-widest rounded-full hover:bg-acid hover:text-graphite transition">Enviar mensagem</button>
+      <p id="formSuccess" class="hidden text-acid text-sm pt-2">✓ Mensagem enviada — retorno em breve.</p>
+    </form>
+  </div>
+</section>
+
+<footer class="bg-graphite text-paper/40 text-xs py-10 px-6 md:px-12 flex flex-col md:flex-row justify-between gap-4 max-w-[1600px] mx-auto">
+  <p>© 2026 NÓRTIC Estúdio</p>
+  <p>São Paulo, Brasil</p>
+</footer>
+
+<!-- MODAL -->
+<div id="modal" class="hidden fixed inset-0 z-[90] bg-graphite/95 items-center justify-center p-6">
+  <button id="closeModal" class="absolute top-6 right-6 text-paper text-3xl">✕</button>
+  <div class="modal-enter max-w-3xl w-full">
+    <img id="modalImg" class="w-full max-h-[75vh] object-contain rounded-sm">
+    <div class="text-paper mt-4 flex justify-between items-center">
+      <p id="modalTitle" class="font-display text-xl"></p>
+      <p id="modalCat" class="text-acid text-xs uppercase tracking-widest"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const works = [
+  {cat:'retrato', title:'Luz Baixa', img:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=900&auto=format&fit=crop'},
+  {cat:'editorial', title:'Concreto', img:'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=900&auto=format&fit=crop'},
+  {cat:'campanha', title:'Verão 26', img:'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop'},
+  {cat:'retrato', title:'Contraluz', img:'https://images.unsplash.com/photo-1519699047748-de8e457a634e?q=80&w=900&auto=format&fit=crop'},
+  {cat:'editorial', title:'Silêncio Urbano', img:'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=900&auto=format&fit=crop'},
+  {cat:'campanha', title:'Linha Nova', img:'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=901&auto=format&fit=crop'},
+];
+
+const grid = document.getElementById('grid');
+const emptyState = document.getElementById('emptyState');
+
+function renderGrid(filter, loading=false) {
+  grid.innerHTML = '';
+  if (loading) {
+    for (let i=0;i<6;i++){
+      const s = document.createElement('div');
+      s.className = 'skeleton aspect-[4/5] rounded-sm';
+      grid.appendChild(s);
+    }
+    return;
+  }
+  const list = works.filter(w => filter==='all' || w.cat===filter);
+  emptyState.classList.toggle('hidden', list.length>0);
+  list.forEach((w,i) => {
+    const el = document.createElement('div');
+    el.className = 'zoom-hover rounded-sm cursor-pointer aspect-[4/5] fade-up';
+    el.innerHTML = `<img src="${w.img}" class="w-full h-full object-cover" loading="lazy">`;
+    el.addEventListener('click', () => openModal(w));
+    grid.appendChild(el);
+    requestAnimationFrame(()=> setTimeout(()=> el.classList.add('in'), i*60));
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid(btn.dataset.f, true);
+    setTimeout(()=> renderGrid(btn.dataset.f), 450);
+  });
+});
+renderGrid('all');
+
+function openModal(w) {
+  document.getElementById('modalImg').src = w.img;
+  document.getElementById('modalTitle').textContent = w.title;
+  document.getElementById('modalCat').textContent = w.cat;
+  const m = document.getElementById('modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+document.getElementById('closeModal').addEventListener('click', () => {
+  const m = document.getElementById('modal'); m.classList.add('hidden'); m.classList.remove('flex');
+});
+
+// mobile menu
+document.getElementById('menuBtn').addEventListener('click', ()=> document.getElementById('mobileMenu').classList.remove('hidden'));
+document.getElementById('closeMenu').addEventListener('click', ()=> document.getElementById('mobileMenu').classList.add('hidden'));
+
+// cursor dot
+const dot = document.getElementById('cursorDot');
+window.addEventListener('mousemove', e => { dot.style.left = e.clientX+'px'; dot.style.top = e.clientY+'px'; });
+
+// parallax hero
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  document.getElementById('parallaxBg').style.transform = `translateY(${y*0.3}px)`;
+});
+
+// reveal on scroll
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+},{threshold:.15});
+document.querySelectorAll('.fade-up').forEach(el=>io.observe(el));
+
+// form submit with loading state
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const original = btn.textContent;
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  setTimeout(()=>{
+    btn.textContent = original;
+    btn.disabled = false;
+    document.getElementById('formSuccess').classList.remove('hidden');
+    this.reset();
+  }, 1200);
+});
+</script>
+</body>
+</html>
